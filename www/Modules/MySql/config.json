@@ -1,0 +1,29 @@
+{
+	"name": "MySql",
+	"author": "RainNoise <crozzy21@gmail.com>",
+	"version": "0.1",
+	"date": "2019-09-24",
+	"licence": "MIT",
+	"cfg": {
+		"db_host": {
+			"type": "string",
+			"default": "localhost"
+		},
+		"db_name": {
+			"type": "string",
+			"default": "database"
+		},
+		"db_user": {
+			"type": "string",
+			"default": "root"
+		},
+		"db_pass": {
+			"type": "string",
+			"default": ""
+		},
+		"asd": {
+			"type":"string",
+			"default":"dfssdkjhfj"
+		}
+	}
+}
