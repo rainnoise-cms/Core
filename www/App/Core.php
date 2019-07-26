@@ -1,95 +1,131 @@
 <?php
+
 namespace App;
 
-class Core {
-	public $params;
-	private $defaults;
+use App\Services\ModuleConfig;
+use RuntimeException;
+use function file_get_contents;
+use function ob_end_clean;
+use function ob_get_clean;
+use function set_exception_handler;
+use function strpos;
+
+class Core
+{
+	private $params;
+	private $request;
 	private $config;
 	private $data;
 
-	public function __construct() {
-		\set_exception_handler(array($this, 'exceptionHandler'));
-		$this->data = [];
-		$configPath = $_SERVER['DOCUMENT_ROOT'] . '/Configs/Core.json';
+	private $modules;
 
-		// Read core config
-		$this->defaults = json_decode(\file_get_contents(__DIR__ . '/config.json'), true);
-		if (!$this->defaults) {
-			throw new \RuntimeException("Cannot read core defaults");
-		}
-		$this->config = json_decode(@\file_get_contents($configPath), true);
+	public function __construct()
+	{
+		set_exception_handler(array($this, 'exceptionHandler'));
+		$this->data = [];
+
+		$this->config = new ModuleConfig(__DIR__);
 
 		// Constructs request data
 		$_buffer = explode('/', $_GET['request']);
-		
-		
-		$this->params = [
-			'request' => [
-				'module' => @$_buffer[0],
-				'action' => @$_buffer[1],
-				'id' => @$_buffer[2]
-			]
+
+
+		$this->request = [
+			'module' => @$_buffer[0],
+			'action' => @$_buffer[1],
+			'id' => @$_buffer[2]
 		];
 	}
-	
+
 	/**
 	 * Core entry point
 	 */
-	public function run() {
-		$moduleName = $this->params['request']['module'] ?: $this->cfg('defaultModule');
+	public function run()
+	{
+		$moduleName = $this->request['module'] ?: $this->cfg('defaultModule');
 		$modulePath = "\\Modules\\{$moduleName}\\Controller";
-		
-		
+
 		if (!class_exists($modulePath)) {
-			throw new \RuntimeException("Module '$moduleName' does not exist");
+			throw new RuntimeException("Module '$moduleName' does not exist");
 		}
 
 		$module = new $modulePath($this);
 
 		$action = $this->params['request']['action'];
-		$output = $this->runAction($module, $action, $_GET + $_POST + $this->params['request']);
-		echo "slkdjfklsd" .$output. ".,m.m.,m,.m.,";
+		$output = $this->runAction($module, $action, $_GET + $_POST);
+		echo $output;
 	}
 
-	private function runAction(BaseController $module, $action, array $params = []) {
-		
+	private function runAction(BaseController $module, $action, array $params = [])
+	{
 		return $module->runAction($action, $this, $params);
-		
 	}
 
-	protected function cfg($cfgName) {
-		if (isset($this->config[$cfgName])) {
-			$result = $this->config[$cfgName];
-		}
-		elseif (isset($this->defaults['cfg'][$cfgName]['default'])) {
-			$result = $this->defaults['cfg'][$cfgName]['default'];
-		}
-		else {
-			throw new \UnexpectedValueException("Unknown parameter '$cfgName'");
-		}
-		 
-
-		//print_r($result);
-		return  $result;
+	/**
+	 * Возвращает значение конфига
+	 * @param $cfgName
+	 * @return mixed
+	 */
+	protected function cfg($cfgName)
+	{
+		return $this->config->cfg($cfgName);
 	}
 
-	public final function exceptionHandler($exception) {
+	/**
+	 * Обработчик неотловленных исключений
+	 * @param $exception
+	 */
+	public final function exceptionHandler($exception)
+	{
 		header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error');
 
-		\ob_end_clean();
-		
-		echo $this->compileTemplate(__DIR__ . '/templates/Exception.tpl', $exception);
+		ob_end_clean();
+
+		if ($this->cfg('debug_mode')) {
+			$this->data = $exception;
+			echo $this->compileTemplate(__DIR__ . '/templates/Exception.tpl');
+		}
 		die;
 	}
 
-	private function compileTemplate($filename, $data) {
-		$this->data = $data;
+	/**
+	 * Генерирует html из шаблона
+	 * @param $filename
+	 * @return false|string
+	 */
+	public function compileTemplate($filename)
+	{
 		ob_start();
 		eval('?>' . file_get_contents($filename) . '<?');
-		return \ob_get_clean();
+		return ob_get_clean();
 	}
 
-	private function resPath(){
-		return '/App/resources';
+	private function resPath()
+	{
+		return $this->getPublicPath(__DIR__ . '/resources');
+	}
+
+	/**
+	 * Преобразует абсолютный путь в публичный
+	 * @param $absPath
+	 * @return bool|mixed|string
+	 */
+	public function getPublicPath($absPath)
+	{
+		if (strpos($absPath, $_SERVER['DOCUMENT_ROOT']) !== 0) return false;
+		$result = str_replace($_SERVER['DOCUMENT_ROOT'], '', $absPath);
+
+		if (strpos($result, '/') !== 0) $result = '/' . $result;
+
+		return $result;
+	}
+
+	public function getModuleName()
+	{
+		return 'Core';
+	}
+
+	public function initModule() {
+
 	}
 }

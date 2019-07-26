@@ -1,57 +1,70 @@
 <?php
+
 namespace App;
 
-abstract class BaseController {
+use App\Services\ModuleConfig;
+use LogicException;
+use ReflectionClass;
+use ReflectionException;
+use RuntimeException;
+
+abstract class BaseController implements ModuleInterface
+{
 	private $Core;
-	private $defaults;
 	private $config;
 
-	protected function __construct(Core $core){
-		$configPath = $_SERVER['DOCUMENT_ROOT'] . '/Configs/' . $this->getModuleName() . '.json';
-
-		$reflector = new \ReflectionClass(get_class($this));
-		$this->defaults = json_decode(\file_get_contents(dirname($reflector->getFileName()) . '/config.json'), true);
-
-		if (!$this->defaults) {
-			throw new \RuntimeException("Cannot read module defaults");
-		}
-
-		$this->config = json_decode(\file_get_contents($configPath), true);
+	/**
+	 * BaseController constructor.
+	 * @param Core $core
+	 * @throws ReflectionException
+	 */
+	public function __construct(Core $core)
+	{
+		$this->Core = $core;
+		$reflector = new ReflectionClass(get_class($this));
+		$this->config = new ModuleConfig(dirname($reflector->getFileName()));
 	}
 
-	protected function cfg($cfgName) {
-		if (isset($this->config[$cfgName])) {
-			$result = $this->config[$cfgName];
-		}
-		elseif (isset($this->defaults['cfg'][$cfgName]['default'])) {
-			$result = $this->defaults['cfg'][$cfgName]['default'];
-		}
-		else {
-			throw new \UnexpectedValueException("Unknown parameter '$cfgName'");
-		}
-		 
-
-		//print_r($result);
-		return $result;
+	/**
+	 * @param $cfgName
+	 * @return mixed
+	 */
+	protected function cfg($cfgName)
+	{
+		return $this->config->cfg($cfgName);
 	}
 
-	private function getModuleName() {
-		$matches = [];
-		
-		if (!\preg_match("/^.*?\\\\(.*?)\\\\/", \get_class($this), $matches)) {
-			throw new \LogicException('Cannot resolve module name');
+	/**
+	 * @return string - Current module name
+	 */
+	public function getModuleName()
+	{
+		if (!preg_match("/^\\\\Modules\\\\(.+?)/", get_class($this), $matches)) {
+			throw new LogicException('Cannot resolve module name');
 		};
 		return $matches[1];
 	}
 
-	public function runAction($action, \App\Core $core, array $params = []) {
-		$action = $action ?: $this->defaults['defaultAction'];
+	/**
+	 * @param $action
+	 * @param Core $core
+	 * @param array $params
+	 * @return false|string
+	 */
+	public function runAction($action, Core $core, array $params = [])
+	{
+		$action = $action ?: $this->cfg('defaultAction');
 
 		if (empty($action)) {
-			throw new \RuntimeException("Empty action name");
+			throw new RuntimeException("Empty action name");
 		}
-		\ob_start();
+		ob_start();
 		$this->{"action_" . $action}($params, $core);
-		return \ob_get_clean();
+		return ob_get_clean();
+	}
+
+	public function compileTemplate($filename)
+	{
+		// TODO: Implement compileTemplate() method.
 	}
 }
