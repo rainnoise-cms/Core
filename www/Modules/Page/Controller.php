@@ -4,7 +4,6 @@ namespace Modules\Page;
 use \App\BaseController;
 use App\Core;
 use ReflectionException;
-use RuntimeException;
 
 class Controller extends BaseController {
     /**
@@ -19,5 +18,9 @@ class Controller extends BaseController {
 
 	public function action_index($params) {
 		echo "It works!";
+	}
+
+	public function event_AfterStartCore($params, Core $core, &$hook) {
+		echo 'Event!';
 	}
 }

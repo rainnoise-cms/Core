@@ -4,10 +4,10 @@ namespace Modules\MySql;
 
 use App\Core;
 use App\DatabaseInterface;
-use App\ModuleInterface;
 use PDO;
 
-class Controller implements DatabaseInterface, ModuleInterface
+
+class Controller implements DatabaseInterface
 {
 	/**
 	 * @var PDO
@@ -19,7 +19,13 @@ class Controller implements DatabaseInterface, ModuleInterface
 		//$connection = new PDO();
 	}
 
-	public function test() {
-		
+	public function insert($tableName, array $data)
+	{
+		// TODO: Implement Insert() method.
+	}
+
+	public function select($tableName, array $columns, array $whereConds, $order, array $limit)
+	{
+		// TODO: Implement Select() method.
 	}
 }

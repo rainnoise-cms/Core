@@ -63,8 +63,7 @@ abstract class BaseController implements ModuleInterface
 		return ob_get_clean();
 	}
 
-	public function compileTemplate($filename)
-	{
-		// TODO: Implement compileTemplate() method.
+	public function getEvents() {
+		return $this->config->getEvents();
 	}
 }

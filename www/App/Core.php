@@ -3,7 +3,6 @@
 namespace App;
 
 use App\Services\ModuleConfig;
-use RuntimeException;
 use function file_get_contents;
 use function ob_end_clean;
 use function ob_get_clean;
@@ -17,7 +16,12 @@ class Core
 	private $config;
 	private $data;
 
+	/**
+	 * @var BaseController[]
+	 */
 	private $modules;
+
+	private $eventSubscribers;
 
 	public function __construct()
 	{
@@ -25,16 +29,23 @@ class Core
 		$this->data = [];
 
 		$this->config = new ModuleConfig(__DIR__);
+		$this->initModules();
 
+
+		$this->CallEvent('AfterStartCore');
 		// Constructs request data
 		$_buffer = explode('/', $_GET['request']);
-
 
 		$this->request = [
 			'module' => @$_buffer[0],
 			'action' => @$_buffer[1],
-			'id' => @$_buffer[2]
 		];
+
+		if (@$_buffer[2]) {
+			$this->params = [
+				'id' => @$_buffer[2]
+			];
+		}
 	}
 
 	/**
@@ -43,16 +54,9 @@ class Core
 	public function run()
 	{
 		$moduleName = $this->request['module'] ?: $this->cfg('defaultModule');
-		$modulePath = "\\Modules\\{$moduleName}\\Controller";
-
-		if (!class_exists($modulePath)) {
-			throw new RuntimeException("Module '$moduleName' does not exist");
-		}
-
-		$module = new $modulePath($this);
 
 		$action = $this->params['request']['action'];
-		$output = $this->runAction($module, $action, $_GET + $_POST);
+		$output = $this->runAction($this->modules[$moduleName], $action, $_GET + $_POST);
 		echo $output;
 	}
 
@@ -102,7 +106,7 @@ class Core
 
 	private function resPath()
 	{
-		return $this->getPublicPath(__DIR__ . '/resources');
+		return $this->getPublicPath(__DIR__ . '/public');
 	}
 
 	/**
@@ -120,12 +124,53 @@ class Core
 		return $result;
 	}
 
-	public function getModuleName()
+	/**
+	 * Возвращает список установленных модулей
+	 *
+	 * @return array
+	 */
+	private function listModules() : array
 	{
-		return 'Core';
+		$modulesDir = $_SERVER['DOCUMENT_ROOT'] . '/Modules/';
+		$dir_handle = opendir($modulesDir);
+
+		$modules = [];
+		while ($dir = readdir($dir_handle)) {
+			if ($dir != "." && $dir != "..") {
+				if (
+					file_exists($modulesDir . $dir . '/config.json') &&
+					file_exists($modulesDir . $dir . '/Controller.php')
+				) {
+					$modules[] = $dir;
+				}
+			}
+
+		}
+
+		return $modules;
 	}
 
-	public function initModule() {
+	/**
+	 * Инициализирует модули
+	 */
+	public function initModules() {
+		foreach ($this->listModules() as $moduleName) {
+			$modulePath = "\\Modules\\{$moduleName}\\Controller";
+			$this->modules[$moduleName] = new $modulePath($this);
 
+			if (in_array('App\\ModuleInterface', class_implements($this->modules[$moduleName]))) {
+				foreach ($this->modules[$moduleName]->getEvents() as $event) {
+					$this->eventSubscribers[$event][] = $this->modules[$moduleName];
+				}
+			}
+		}
+	}
+
+	public function CallEvent($event, $params = [], &$hook = null) {
+		foreach ($this->eventSubscribers[$event] as $module) {
+			if (method_exists($module, 'event_' . $event)) {
+				$module->{'event_' . $event}($params, $this, $hook);
+			}
+		}
 	}
 }
