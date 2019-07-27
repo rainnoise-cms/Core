@@ -4,8 +4,10 @@
 	"version": "0.1",
 	"date": "2019-09-24",
 	"licence": "MIT",
-	"defaultAction": "index",
 	"cfg": {
-
+		"defaultAction": {
+			"type": "string",
+			"default": "index"
+		}
 	}
 }
