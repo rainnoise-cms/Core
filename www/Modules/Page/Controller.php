@@ -2,20 +2,22 @@
 namespace Modules\Page;
 
 use \App\BaseController;
+use App\Core;
+use ReflectionException;
+use RuntimeException;
 
 class Controller extends BaseController {
-	public function __construct(\App\Core $core){
+    /**
+     * Controller constructor.
+     * @param Core $core
+     * @throws ReflectionException
+     */
+    public function __construct(Core $core){
 		parent::__construct($core);
 		
 	}
 
 	public function action_index($params) {
-		echo "<pre>";
-		print_r($params);
-		throw new \RuntimeException("Да похуй!");
-	}
-	
-	public function test(){
-		$this->cfg('fh');
+		echo "It works!";
 	}
 }

@@ -2,16 +2,19 @@
 
 namespace Modules\MySql;
 
-use \App\DatabaseController;
+use App\Core;
+use App\DatabaseInterface;
+use App\ModuleInterface;
+use PDO;
 
-class Controller extends DatabaseController {
+class Controller implements DatabaseInterface, ModuleInterface
+{
 	/**
-	 * @var \PDO
+	 * @var PDO
 	 */
 	private $connection;
 
-	public function __construct(\App\Core $core){
-		parent::__construct($core);
+	public function __construct(Core $core){
 
 		//$connection = new PDO();
 	}

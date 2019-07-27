@@ -1,18 +1,23 @@
 <?php
+
 namespace App;
 
-abstract class BaseModel {
+abstract class BaseModel
+{
 	private $data;
 
-	public function __construct($data){
+	public function __construct($data)
+	{
 		$this->data = $data;
 	}
 
-	public static function request(DatabaseController $db, $whereData){
-		
+	public static function request(DatabaseInterface $db, $whereData)
+	{
+
 	}
 
-	public function save(DatabaseController $db) {
-		
+	public function save(DatabaseInterface $db)
+	{
+
 	}
 }

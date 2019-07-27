@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <link href="/App/resources/core.css" rel="stylesheet"/>
+    <title>Exception</title>
+</head>
+<body>
+<h1>AHAHAHAHHA!!!!!</h1>
+<H3>EXCEPTION!</H3>
+<pre>RuntimeException Object
+(
+    [message:protected] => Да похуй!
+    [string:Exception:private] => 
+    [code:protected] => 0
+    [file:protected] => /var/www/public/Modules/Page/Controller.php
+    [line:protected] => 23
+    [trace:Exception:private] => Array
+        (
+            [0] => Array
+                (
+                    [file] => /var/www/public/App/BaseController.php
+                    [line] => 63
+                    [function] => action_index
+                    [class] => Modules\Page\Controller
+                    [type] => ->
+                    [args] => Array
+                        (
+                            [0] => Array
+                                (
+                                    [request] => 
+                                )
+
+                            [1] => App\Core Object
+                                (
+                                    [params:App\Core:private] => 
+                                    [request:App\Core:private] => Array
+                                        (
+                                            [module] => 
+                                            [action] => 
+                                            [id] => 
+                                        )
+
+                                    [defaults:App\Core:private] => 
+                                    [config:App\Core:private] => App\Services\ModuleConfig Object
+                                        (
+                                            [name:App\Services\ModuleConfig:private] => Core
+                                            [version:App\Services\ModuleConfig:private] => 0.1
+                                            [author:App\Services\ModuleConfig:private] => RainNoise <crozzy21@gmail.com>
+                                            [licence:App\Services\ModuleConfig:private] => MIT
+                                            [description:App\Services\ModuleConfig:private] => 
+                                            [date:App\Services\ModuleConfig:private] => 2019-09-24
+                                            [config:App\Services\ModuleConfig:private] => Array
+                                                (
+                                                    [defaultModule] => App\Services\ConfigString Object
+                                                        (
+                                                            [key:App\Services\ConfigString:private] => defaultModule
+                                                            [type:App\Services\ConfigString:private] => string
+                                                            [variants:App\Services\ConfigString:private] => 
+                                                            [value:App\Services\ConfigString:private] => Page
+                                                        )
+
+                                                    [debug_mode] => App\Services\ConfigString Object
+                                                        (
+                                                            [key:App\Services\ConfigString:private] => debug_mode
+                                                            [type:App\Services\ConfigString:private] => boolean
+                                                            [variants:App\Services\ConfigString:private] => 
+                                                            [value:App\Services\ConfigString:private] => 1
+                                                        )
+
+                                                )
+
+                                        )
+
+                                    [data:App\Core:private] => RuntimeException Object
+ *RECURSION*
+                                )
+
+                        )
+
+                )
+
+            [1] => Array
+                (
+                    [file] => /var/www/public/App/Core.php
+                    [line] => 60
+                    [function] => runAction
+                    [class] => App\BaseController
+                    [type] => ->
+                    [args] => Array
+                        (
+                            [0] => index
+                            [1] => App\Core Object
+                                (
+                                    [params:App\Core:private] => 
+                                    [request:App\Core:private] => Array
+                                        (
+                                            [module] => 
+                                            [action] => 
+                                            [id] => 
+                                        )
+
+                                    [defaults:App\Core:private] => 
+                                    [config:App\Core:private] => App\Services\ModuleConfig Object
+                                        (
+                                            [name:App\Services\ModuleConfig:private] => Core
+                                            [version:App\Services\ModuleConfig:private] => 0.1
+                                            [author:App\Services\ModuleConfig:private] => RainNoise <crozzy21@gmail.com>
+                                            [licence:App\Services\ModuleConfig:private] => MIT
+                                            [description:App\Services\ModuleConfig:private] => 
+                                            [date:App\Services\ModuleConfig:private] => 2019-09-24
+                                            [config:App\Services\ModuleConfig:private] => Array
+                                                (
+                                                    [defaultModule] => App\Services\ConfigString Object
+                                                        (
+                                                            [key:App\Services\ConfigString:private] => defaultModule
+                                                            [type:App\Services\ConfigString:private] => string
+                                                            [variants:App\Services\ConfigString:private] => 
+                                                            [value:App\Services\ConfigString:private] => Page
+                                                        )
+
+                                                    [debug_mode] => App\Services\ConfigString Object
+                                                        (
+                                                            [key:App\Services\ConfigString:private] => debug_mode
+                                                            [type:App\Services\ConfigString:private] => boolean
+                                                            [variants:App\Services\ConfigString:private] => 
+                                                            [value:App\Services\ConfigString:private] => 1
+                                                        )
+
+                                                )
+
+                                        )
+
+                                    [data:App\Core:private] => RuntimeException Object
+ *RECURSION*
+                                )
+
+                            [2] => Array
+                                (
+                                    [request] => 
+                                )
+
+                        )
+
+                )
+
+            [2] => Array
+                (
+                    [file] => /var/www/public/App/Core.php
+                    [line] => 54
+                    [function] => runAction
+                    [class] => App\Core
+                    [type] => ->
+                    [args] => Array
+                        (
+                            [0] => Modules\Page\Controller Object
+                                (
+                                    [Core:App\BaseController:private] => 
+                                    [defaults:App\BaseController:private] => 
+                                    [config:App\BaseController:private] => App\Services\ModuleConfig Object
+                                        (
+                                            [name:App\Services\ModuleConfig:private] => Page
+                                            [version:App\Services\ModuleConfig:private] => 0.1
+                                            [author:App\Services\ModuleConfig:private] => RainNoise <crozzy21@gmail.com>
+                                            [licence:App\Services\ModuleConfig:private] => MIT
+                                            [description:App\Services\ModuleConfig:private] => 
+                                            [date:App\Services\ModuleConfig:private] => 2019-09-24
+                                            [config:App\Services\ModuleConfig:private] => Array
+                                                (
+                                                    [defaultAction] => App\Services\ConfigString Object
+                                                        (
+                                                            [key:App\Services\ConfigString:private] => defaultAction
+                                                            [type:App\Services\ConfigString:private] => string
+                                                            [variants:App\Services\ConfigString:private] => 
+                                                            [value:App\Services\ConfigString:private] => index
+                                                        )
+
+                                                )
+
+                                        )
+
+                                )
+
+                            [1] => 
+                            [2] => Array
+                                (
+                                    [request] => 
+                                )
+
+                        )
+
+                )
+
+            [3] => Array
+                (
+                    [file] => /var/www/public/index.php
+                    [line] => 5
+                    [function] => run
+                    [class] => App\Core
+                    [type] => ->
+                    [args] => Array
+                        (
+                        )
+
+                )
+
+        )
+
+    [previous:Exception:private] => 
+)
+</pre>
+</body>
+</html>

@@ -1,19 +1,23 @@
 {
-    "name": "rainnoise/rainnoise-cms",
-    "type": "project",
-    "description": "",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "RainNoise",
-            "email": "crozzy21@gmail.com"
-        }
-    ],
-    "require": {},
-    "autoload": {
-        "psr-4": {
-            "App\\": "App/",
-            "Modules\\": "Modules/"
-        }
-    }
+	"name": "rainnoise/rainnoise-cms",
+	"type": "project",
+	"description": "",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "RainNoise",
+			"email": "crozzy21@gmail.com"
+		}
+	],
+	"autoload": {
+		"psr-4": {
+			"App\\": "App/",
+			"Modules\\": "Modules/"
+		}
+	},
+	"require": {
+		"ext-pdo": "*",
+		"ext-json": "*",
+		"codeception/codeception": "*"
+	}
 }
