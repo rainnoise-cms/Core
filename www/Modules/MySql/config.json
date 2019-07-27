@@ -20,10 +20,6 @@
 		"db_pass": {
 			"type": "string",
 			"default": ""
-		},
-		"asd": {
-			"type":"string",
-			"default":"dfssdkjhfj"
 		}
 	}
 }
