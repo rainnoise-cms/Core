@@ -12,6 +12,38 @@
     "debug_mode": {
       "type": "boolean",
       "default": false
+    },
+    "db_driver": {
+      "type": "string",
+      "default": "mysql"
+    },
+    "db_host": {
+      "type": "string",
+      "default": false
+    },
+    "db_name": {
+      "type": "string",
+      "default": false
+    },
+    "db_user": {
+      "type": "string",
+      "default": "root"
+    },
+    "db_pass": {
+      "type": "string",
+      "default": ""
+    },
+    "db_charset": {
+      "type": "string",
+      "default": "utf8"
+    },
+    "db_collation": {
+      "type": "string",
+      "default": "utf8_unicode_ci"
+    },
+    "db_prefix": {
+      "type": "string",
+      "default": ""
     }
   }
 }

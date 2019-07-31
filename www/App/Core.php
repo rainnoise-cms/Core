@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Services\ModuleConfig;
+use \Illuminate\Database\Capsule\Manager as Capsule;
 use function file_get_contents;
 use function ob_end_clean;
 use function ob_get_clean;
@@ -11,13 +12,13 @@ use function strpos;
 
 class Core
 {
-	private $params;
+	private $capsule;
 	private $request;
 	private $config;
 	private $data;
 
 	/**
-	 * @var BaseController[]
+	 * @var Controller[]
 	 */
 	private $modules;
 
@@ -26,26 +27,29 @@ class Core
 	public function __construct()
 	{
 		set_exception_handler(array($this, 'exceptionHandler'));
+
 		$this->data = [];
 
 		$this->config = new ModuleConfig(__DIR__);
 		$this->initModules();
 
+		$this->request = $_GET['request'];
 
+		$this->capsule = new Capsule();
+		$this->capsule->addConnection([
+			'driver' => $this->cfg('db_driver'),
+			'host' => $this->cfg('db_host'),
+			'database' => $this->cfg('db_name'),
+			'username' => $this->cfg('db_user'),
+			'password' => $this->cfg('db_pass'),
+			'charset' => $this->cfg('db_charset'),
+			'collation' => $this->cfg('db_collation'),
+			'prefix' => $this->cfg('db_prefix')
+		]);
+
+		$this->capsule->setAsGlobal();
+		$this->capsule->bootEloquent();
 		$this->CallEvent('AfterStartCore');
-		// Constructs request data
-		$_buffer = explode('/', $_GET['request']);
-
-		$this->request = [
-			'module' => @$_buffer[0],
-			'action' => @$_buffer[1],
-		];
-
-		if (@$_buffer[2]) {
-			$this->params = [
-				'id' => @$_buffer[2]
-			];
-		}
 	}
 
 	/**
@@ -53,16 +57,17 @@ class Core
 	 */
 	public function run()
 	{
-		$moduleName = $this->request['module'] ?: $this->cfg('defaultModule');
+		$moduleName = preg_replace('#^(.+?)/.*#', '$1', $this->request) ?: $this->cfg('defaultModule');
 
-		$action = $this->params['request']['action'];
-		$output = $this->runAction($this->modules[$moduleName], $action, $_GET + $_POST);
+		$output = $this->runModule(
+			$this->modules[$moduleName]
+		);
 		echo $output;
 	}
 
-	private function runAction(BaseController $module, $action, array $params = [])
+	private function runModule(Controller $module)
 	{
-		return $module->runAction($action, $this, $params);
+		return $module->run($this, array_merge($_GET, $_POST));
 	}
 
 	/**
@@ -102,6 +107,14 @@ class Core
 		ob_start();
 		eval('?>' . file_get_contents($filename) . '<?');
 		return ob_get_clean();
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getRequest()
+	{
+		return $this->request;
 	}
 
 	private function resPath()

@@ -11,7 +11,7 @@ class FirstCest
 	{
 		$I->amOnPage('/');
 		$I->canSeeResponseCodeIsSuccessful();
-		$I->see('It works!');
+		$I->see('много текcта');
 	}
 
     // tests
@@ -21,4 +21,10 @@ class FirstCest
 		$I->canSeeResponseCodeIsServerError();
 		$I->see('Module \'NotExistModule\' does not exist');
     }
+
+    public function PageRequest(AcceptanceTester $I) {
+		$I->amOnPage('/Page/index/1/');
+		$I->canSeeResponseCodeIsSuccessful();
+		$I->see('много текcта');
+	}
 }
