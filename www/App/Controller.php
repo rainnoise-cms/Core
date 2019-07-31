@@ -11,7 +11,7 @@ use RuntimeException;
 
 abstract class Controller implements ModuleInterface
 {
-	private $Core;
+	private $core;
 	private $config;
 
 	/**
@@ -21,7 +21,7 @@ abstract class Controller implements ModuleInterface
 	 */
 	public function __construct(Core $core)
 	{
-		$this->Core = $core;
+		$this->core = $core;
 		$reflector = new ReflectionClass(get_class($this));
 		$this->config = new ModuleConfig(dirname($reflector->getFileName()));
 	}
@@ -57,7 +57,7 @@ abstract class Controller implements ModuleInterface
 	{
 		$request = Request::resolve($params['request']);
 
-		if (!in_array($request->actionName, $this->actionsList()) &&
+		if (!in_array($request->actionName, $this->listActions()) &&
 				$this->cfg('defaultAction')) {
 			$request->actionName = $this->cfg('defaultAction');
 		}
@@ -68,23 +68,39 @@ abstract class Controller implements ModuleInterface
 		if (empty($request->actionName)) {
 			throw new RuntimeException("Empty action name");
 		}
-		ob_start();
-		$this->{"action_" . $request->actionName}($params, $core);
-		return $this->actionEnd();
+		return $this->runAction($request->actionName, $params);
 	}
 
-	/**
-	 * @return false|string
-	 */
-	protected function actionEnd()
+	public function runAction($actionName, $params)
 	{
+		ob_start();
+		$this->{$this->actionPrefix() . $actionName}($params, $this->core);
 		return ob_get_clean();
+	}
+
+	public function runEvent($eventName, $params, &$hook)
+	{
+		if (!in_array($eventName, $this->listEvents())) return null;
+
+		ob_start();
+		$this->{$this->eventPrefix() . $eventName}($params, $this->core, $hook);
+		return ob_get_clean();
+	}
+
+	public function actionPrefix()
+	{
+		return 'action_';
+	}
+
+	public function eventPrefix()
+	{
+		return 'event_';
 	}
 
 	/**
 	 * @return array|string[]
 	 */
-	public function getEvents() {
+	public function listEvents() {
 		return $this->config->getEvents();
 	}
 
@@ -92,7 +108,7 @@ abstract class Controller implements ModuleInterface
 	 * @return array
 	 * @throws ReflectionException
 	 */
-	protected function actionsList() {
+	public function listActions() {
 		$reflection = new ReflectionClass($this);
 
 		$methods = array_filter(

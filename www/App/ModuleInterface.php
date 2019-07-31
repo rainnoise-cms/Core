@@ -7,5 +7,10 @@ namespace App;
 interface ModuleInterface
 {
 	public function __construct(Core $core);
-	public function getEvents();
+
+	public function listEvents();
+
+	public function listActions();
+
+	public function run();
 }

@@ -3,7 +3,9 @@
 namespace App;
 
 use App\Services\ModuleConfig;
+use App\Helpers\Request;
 use \Illuminate\Database\Capsule\Manager as Capsule;
+use ReflectionException;
 use function file_get_contents;
 use function ob_end_clean;
 use function ob_get_clean;
@@ -22,6 +24,9 @@ class Core
 	 */
 	private $modules;
 
+	/**
+	 * @var Controller[][]
+	 */
 	private $eventSubscribers;
 
 	public function __construct()
@@ -33,7 +38,7 @@ class Core
 		$this->config = new ModuleConfig(__DIR__);
 		$this->initModules();
 
-		$this->request = $_GET['request'];
+		$this->request = Request::resolve($_GET['request']);
 
 		$this->capsule = new Capsule();
 		$this->capsule->addConnection([
@@ -49,25 +54,50 @@ class Core
 
 		$this->capsule->setAsGlobal();
 		$this->capsule->bootEloquent();
-		$this->CallEvent('AfterStartCore');
+		$this->callEvent('AfterStartCore');
 	}
 
 	/**
 	 * Core entry point
+	 * @throws ReflectionException
 	 */
 	public function run()
 	{
-		$moduleName = preg_replace('#^(.+?)/.*#', '$1', $this->request) ?: $this->cfg('defaultModule');
+		$this->request->moduleName =  $this->request->moduleName ?: $this->cfg('defaultModule');
 
+		$this->callEvent('BeforeGlobalAction', array_merge($_GET, $_POST));
 		$output = $this->runModule(
-			$this->modules[$moduleName]
+			$this->modules[$this->request->moduleName]
 		);
+		$this->callEvent('AfterGlobalAction', array_merge($_GET, $_POST), $output);
 		echo $output;
 	}
 
+	/**
+	 * @param Controller $module
+	 * @return false|string
+	 * @throws ReflectionException
+	 */
 	private function runModule(Controller $module)
 	{
 		return $module->run($this, array_merge($_GET, $_POST));
+	}
+
+	/**
+	 * @param $moduleName
+	 * @param $actionName
+	 * @param array $params
+	 * @return false|string
+	 * @throws ReflectionException
+	 */
+	public function callModule($moduleName, $actionName, array $params = [])
+	{
+		if (isset($this->modules[$moduleName]) &&
+				in_array($actionName, $this->modules[$moduleName]->listActions())
+		) {
+			return $this->modules[$moduleName]->runAction($actionName, $params);
+		}
+		return null;
 	}
 
 	/**
@@ -172,17 +202,18 @@ class Core
 			$this->modules[$moduleName] = new $modulePath($this);
 
 			if (in_array('App\\ModuleInterface', class_implements($this->modules[$moduleName]))) {
-				foreach ($this->modules[$moduleName]->getEvents() as $event) {
+				foreach ($this->modules[$moduleName]->listEvents() as $event) {
 					$this->eventSubscribers[$event][] = $this->modules[$moduleName];
 				}
 			}
 		}
 	}
 
-	public function CallEvent($event, $params = [], &$hook = null) {
-		foreach ($this->eventSubscribers[$event] as $module) {
-			if (method_exists($module, 'event_' . $event)) {
-				$module->{'event_' . $event}($params, $this, $hook);
+	public function callEvent($event, $params = [], &$hook = null) {
+		if (!empty($this->eventSubscribers[$event])) {
+			foreach ($this->eventSubscribers[$event] as $module) {
+				$module->runEvent($event, $params, $hook);
+
 			}
 		}
 	}
