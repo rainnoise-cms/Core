@@ -14,3 +14,6 @@
 `$ composer install`  
 
 `
+### Модули  
+Page - https://github.com/RainNoise/rcms-page  
+Decorator - https://github.com/RainNoise/rcms-decorator
