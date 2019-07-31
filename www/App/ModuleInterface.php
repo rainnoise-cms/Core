@@ -12,5 +12,5 @@ interface ModuleInterface
 
 	public function listActions();
 
-	public function run();
+	public function run(Core $core, array $params = []);
 }
