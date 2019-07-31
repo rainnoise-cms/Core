@@ -1,2 +1,6 @@
 www/vendor
-www/Configs/MySql.json
+/www/Configs/Core.json
+/www/Modules/
+/www/tests/_data/
+/www/tests/_output/
+/www/tests/_support/

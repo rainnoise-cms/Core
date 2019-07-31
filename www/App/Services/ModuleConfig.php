@@ -1,9 +1,8 @@
 <?php
 namespace App\Services;
 
-
-
 use RuntimeException;
+use App\Helpers\ConfigString;
 
 define('CONFIGS_DIR', '/Configs/');
 
@@ -51,6 +50,10 @@ class ModuleConfig
 	private $config;
 
 	/**
+	 * @var string[]
+	 */
+	private $events;
+	/**
 	 * Configurator constructor.
 	 * @param $modulePath
 	 */
@@ -68,6 +71,7 @@ class ModuleConfig
 		$this->date = $meta['date'];
 		$this->licence = $meta['licence'];
 		$this->description = $meta['description'];
+		$this->events = $meta['events'];
 
 		$config = json_decode(file_get_contents($_SERVER['DOCUMENT_ROOT'] . CONFIGS_DIR . $this->name . '.json'), true);
 
@@ -160,5 +164,13 @@ class ModuleConfig
 		)) {
 			throw new RuntimeException("Cannot write '{$this->name}' config");
 		}
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function getEvents(): array
+	{
+		return $this->events;
 	}
 }

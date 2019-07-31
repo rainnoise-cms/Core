@@ -18,6 +18,7 @@
 	"require": {
 		"ext-pdo": "*",
 		"ext-json": "*",
-		"codeception/codeception": "*"
+		"codeception/codeception": "*",
+		"illuminate/database": "^5.8"
 	}
 }
