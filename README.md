@@ -9,11 +9,12 @@
 При необходимости отредактируйте `httpd.conf`   
 
 Для развертывания выполните:   
-`$ git clone https://github.com/RainNoise/rainnoise-cms /path/to/server/dir`  
+`$ git clone https://github.com/rainnoise-cms/Core /path/to/server/dir`  
 `$ cd /path/to/server/dir`  
 `$ composer install`  
 
-`
+
 ### Модули  
+Развертываются в папку `/www/Modules/[module_name]`  
 Page - https://github.com/RainNoise/rcms-page  
 Decorator - https://github.com/RainNoise/rcms-decorator
