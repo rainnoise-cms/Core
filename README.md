@@ -10,7 +10,7 @@
 
 Для развертывания выполните:   
 `$ git clone https://github.com/rainnoise-cms/Core /path/to/server/dir`  
-`$ cd /path/to/server/dir`  
+`$ cd /path/to/server/dir/www`  
 `$ composer install`  
 
 
