@@ -1,0 +1,13 @@
+{
+	"name": "Decorator",
+	"author": "RainNoise <crozzy21@gmail.com>",
+	"version": "0.1",
+	"date": "2019-09-24",
+	"licence": "MIT",
+	"cfg": {
+		"template": {
+			"type": "string",
+			"default": "default"
+		}
+	}
+}
