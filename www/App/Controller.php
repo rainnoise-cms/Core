@@ -11,8 +11,8 @@ use RuntimeException;
 
 abstract class Controller implements ModuleInterface
 {
-	private $core;
-	private $config;
+	protected $core;
+	protected $config;
 
 	/**
 	 * Controller constructor.
@@ -47,6 +47,16 @@ abstract class Controller implements ModuleInterface
 		return $matches[1];
 	}
 
+	public function getDataDir()
+	{
+		$dirPath = $_SERVER['DOCUMENT_ROOT'] . '/Data/' . $this->moduleName();
+
+		if (!file_exists($dirPath)) {
+			mkdir($dirPath);
+		}
+
+		return $dirPath;
+	}
 	/**
 	 * @param Core $core
 	 * @param array $params
@@ -60,9 +70,9 @@ abstract class Controller implements ModuleInterface
 		if (!in_array($request->actionName, $this->listActions()) &&
 				$this->cfg('defaultAction')) {
 			$request->actionName = $this->cfg('defaultAction');
-		}
+		} /** @noinspection PhpStatementHasEmptyBodyInspection */
 		else {
-			// 404 ?
+			// todo 404
 		}
 
 		if (empty($request->actionName)) {
@@ -126,5 +136,16 @@ abstract class Controller implements ModuleInterface
 		return array_values(array_map(function($method) {
 			return preg_replace('#^action_([A-Za-z].+)$#', '$1', $method->name);
 		}, $methods));
+	}
+
+	public function Decorate(&$data, $view = null)
+	{
+		$decoratorParams = [
+			'view' => $view,
+			'module' => $this->moduleName()
+		];
+
+		$this->core->callEvent('Decorate', ($_GET + $_POST + $decoratorParams), $data);
+		return $data;
 	}
 }

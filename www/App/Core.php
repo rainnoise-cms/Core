@@ -130,12 +130,16 @@ class Core
 	/**
 	 * Генерирует html из шаблона
 	 * @param $filename
+	 * @param $data
 	 * @return false|string
 	 */
-	public function compileTemplate($filename)
+	public function compileTemplate($filename, $data)
 	{
+		$oldData = $this->data;
+		$this->data = $data;
 		ob_start();
 		eval('?>' . file_get_contents($filename) . '<?');
+		$this->data = $oldData;
 		return ob_get_clean();
 	}
 
@@ -213,7 +217,6 @@ class Core
 		if (!empty($this->eventSubscribers[$event])) {
 			foreach ($this->eventSubscribers[$event] as $module) {
 				$module->runEvent($event, $params, $hook);
-
 			}
 		}
 	}
