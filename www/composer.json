@@ -19,6 +19,6 @@
 		"ext-pdo": "*",
 		"ext-json": "*",
 		"codeception/codeception": "*",
-		"illuminate/database": "^5.8"
+		"illuminate/database": "^6.20"
 	}
 }
